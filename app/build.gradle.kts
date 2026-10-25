@@ -22,11 +22,21 @@ android {
         applicationId = "com.moblized.courseshelf"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        // CI builds count up so every release installs over the previous one.
+        val build = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
+        versionCode = build
+        versionName = "1.0.$build"
     }
 
     signingConfigs {
+        // A fixed key committed with the project, so builds from any machine (or GitHub)
+        // share one signature and updates install over each other.
+        getByName("debug") {
+            storeFile = file("ci-debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
         if (!keystoreProps.isEmpty) {
             create("release") {
                 storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))

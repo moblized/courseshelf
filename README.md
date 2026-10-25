@@ -20,23 +20,22 @@ server running on TrueNAS.
 
 OfflineU has no login, so use it on your home network or over Tailscale/WireGuard.
 
+## Installing
+
+Every push to `main` builds the app on GitHub and publishes it under **Releases**. On your phone,
+open the latest release, tap the `.apk`, and allow your browser to install apps when asked.
+Newer releases install over older ones and keep your settings.
+
 ## Building
 
 ```
 ./gradlew testDebugUnitTest assembleRelease
 ```
 
-The APK lands in `app/build/outputs/apk/release/`. Without a `keystore.properties` file the release
-build is signed with the debug key. To sign with your own key, create `keystore.properties`:
-
-```
-storeFile=courseshelf.jks
-storePassword=...
-keyAlias=courseshelf
-keyPassword=...
-```
-
-Keep the keystore safe: updates only install over a build signed with the same key.
+Builds are signed with `app/ci-debug.keystore`, a fixed key kept in the repo so every build
+(local or GitHub) can update the installed app. To sign with a private key instead, add repo
+secrets `KEYSTORE_BASE64` (your `.jks`, base64-encoded, alias `courseshelf`) and
+`KEYSTORE_PASSWORD`. Switching keys means uninstalling the old build once.
 
 ## How it talks to OfflineU
 
