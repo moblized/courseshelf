@@ -1,0 +1,34 @@
+name: offlineu
+# OfflineU course server for TrueNAS SCALE
+# Paste into Apps > Discover > (three dots) > Install via YAML
+# Change "tank" below to your pool name before saving.
+services:
+  offlineu:
+    image: ghcr.io/nickkk333/offlineu:latest
+    container_name: offlineu
+    restart: unless-stopped
+    ports:
+      - "30500:5000"          # open http://<truenas-ip>:30500
+    environment:
+      - OFFLINEU_ROOTS=/courses
+      - OFFLINEU_ROOTS_LABEL=Courses
+      - OFFLINEU_PROGRESS_DIR=/app/data
+      - OFFLINEU_CACHE_DIR=/app/cache
+      - OFFLINEU_CACHE_LIMIT_GB=50
+      # The image has no Intel/NVIDIA video drivers, so GPU encoding can't work;
+      # the i5-14500 handles the rare re-encode fine. Most course MP4s play directly.
+      - OFFLINEU_HWACCEL=off
+      - TZ=America/New_York
+    volumes:
+      # Your course library (read-only, OfflineU never changes your files)
+      - /mnt/tank/media/courses:/courses:ro
+      # Progress + course list (keep this when updating or recreating the app)
+      - /mnt/tank/apps/offlineu/data:/app/data
+      # Scratch space for converted videos (safe to delete any time)
+      - /mnt/tank/apps/offlineu/cache:/app/cache
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
