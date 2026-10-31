@@ -1,7 +1,6 @@
 name: offlineu
 # OfflineU course server for TrueNAS SCALE
 # Paste into Apps > Discover > (three dots) > Install via YAML
-# Change "tank" below to your pool name before saving.
 services:
   offlineu:
     image: ghcr.io/nickkk333/offlineu:latest
@@ -21,11 +20,11 @@ services:
       - TZ=America/New_York
     volumes:
       # Your course library (read-only, OfflineU never changes your files)
-      - /mnt/tank/media/courses:/courses:ro
-      # Progress + course list (keep this when updating or recreating the app)
-      - /mnt/tank/apps/offlineu/data:/app/data
+      - /mnt/Plex/jellyfin/cashe/media/downloads/coursees:/courses:ro
+      # Progress + course list (created on first start; keep it when updating the app)
+      - /mnt/Plex/apps/offlineu/data:/app/data
       # Scratch space for converted videos (safe to delete any time)
-      - /mnt/tank/apps/offlineu/cache:/app/cache
+      - /mnt/Plex/apps/offlineu/cache:/app/cache
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:5000/health"]
       interval: 30s

@@ -3,6 +3,8 @@ name: Build APK
 on:
   push:
     branches: [ main ]
+    # Docs and the server install file don't change the app, so they don't make a new release.
+    paths-ignore: [ 'README.md', 'offlineu-truenas.yaml' ]
   pull_request:
   workflow_dispatch:
 
